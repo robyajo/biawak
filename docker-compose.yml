@@ -1,0 +1,26 @@
+services:
+    mysql:
+        image: mysql:8.0
+        container_name: biawak-mysql
+        ports:
+            - '3306:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: '123'
+            MYSQL_DATABASE: biawak
+        volumes:
+            - mysql-data:/var/lib/mysql
+        restart: unless-stopped
+
+    redis:
+        image: redis:7-alpine
+        container_name: biawak-redis
+        ports:
+            - '6380:6379'
+        volumes:
+            - redis-data:/data
+        restart: unless-stopped
+        command: redis-server --appendonly yes
+
+volumes:
+    mysql-data:
+    redis-data:
