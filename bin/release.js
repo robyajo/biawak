@@ -265,6 +265,21 @@ async function main() {
         try {
             execSync('npm publish --access public', { stdio: 'inherit' });
             console.log(`\n🎉 Paket ${packageName}@${newVersion} berhasil dipublikasikan ke NPM!`);
+
+            // Publish Sub-packages (ai-biawak-sdk & biawak-sdk)
+            const subPackages = ['packages/ai-biawak-sdk', 'packages/biawak-sdk'];
+            for (const subPkg of subPackages) {
+                const subPkgDir = path.join(rootDir, subPkg);
+                if (fs.existsSync(path.join(subPkgDir, 'package.json'))) {
+                    try {
+                        console.log(`\n📦 Mempublikasikan sub-paket ${subPkg}...`);
+                        execSync('npm publish --access public', { cwd: subPkgDir, stdio: 'inherit' });
+                        console.log(`🎉 Sub-paket ${subPkg} berhasil dipublikasikan!`);
+                    } catch (err) {
+                        console.log(`⚠️ Gagal mempublikasikan ${subPkg}:`, err.message);
+                    }
+                }
+            }
         } catch (error) {
             const details = error.combinedOutput || error.message || '';
 

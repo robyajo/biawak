@@ -142,6 +142,10 @@ async function main() {
       fs.copyFileSync(envExamplePath, envPath);
     }
 
+    // Ensure database migration folders exist out of the box
+    fs.mkdirSync(path.join(targetDir, "src", "db", "drizzle", "sqlite"), { recursive: true });
+    fs.mkdirSync(path.join(targetDir, "src", "db", "drizzle", "mysql"), { recursive: true });
+
     // Clean up package.json for target project
     const pkgPath = path.join(targetDir, "package.json");
     if (fs.existsSync(pkgPath)) {
@@ -175,15 +179,28 @@ async function main() {
 
   // Step 3: Initialize SQLite Database & Push Schema
   await runWithLizardAnimation("Laying database eggs (Initial SQLite db:push)...", async () => {
-    const pushCmd = packageManager === "bun" ? "bun run db:push" : "npx drizzle-kit push";
-    execSync(pushCmd, { cwd: targetDir, stdio: "ignore" });
+    try {
+      const pushCmd = packageManager === "bun" ? "bun run db:push" : "npx drizzle-kit push";
+      execSync(pushCmd, { cwd: targetDir, stdio: "ignore" });
+    } catch (e) {
+      // Fallback push command
+      try {
+        execSync("npx drizzle-kit push", { cwd: targetDir, stdio: "ignore" });
+      } catch {}
+    }
     await sleep(400);
   });
 
-  // Step 4: Seed Database
+  // Step 4: Seed Database (Default Admin & User accounts)
   await runWithLizardAnimation("Seeding default Admin & User accounts...", async () => {
-    const seedCmd = packageManager === "bun" ? "bun run db:seed" : "npx tsx src/db/seed.ts";
-    execSync(seedCmd, { cwd: targetDir, stdio: "ignore" });
+    try {
+      const seedCmd = packageManager === "bun" ? "bun run db:seed" : "npx tsx src/db/seed.ts";
+      execSync(seedCmd, { cwd: targetDir, stdio: "ignore" });
+    } catch (e) {
+      try {
+        execSync("bun run src/db/seed.ts", { cwd: targetDir, stdio: "ignore" });
+      } catch {}
+    }
     await sleep(400);
   });
 

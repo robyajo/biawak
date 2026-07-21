@@ -1,35 +1,40 @@
-import { defineRelations } from "drizzle-orm";
-import * as schema from "./schema/index.js";
+import { relations } from "drizzle-orm";
+import { user, account, session, refreshToken, sosialMedia } from "./schema/index.js";
 
-export const relations = defineRelations(schema, (r) => ({
-  user: {
-    sessions: r.many.session(),
-    accounts: r.many.account(),
-    refreshTokens: r.many.refreshToken(),
-    sosialMedias: r.many.sosialMedia(),
-  },
-  account: {
-    user: r.one.user({
-      from: r.account.userId,
-      to: r.user.id,
-    }),
-  },
-  session: {
-    user: r.one.user({
-      from: r.session.userId,
-      to: r.user.id,
-    }),
-  },
-  refreshToken: {
-    user: r.one.user({
-      from: r.refreshToken.userId,
-      to: r.user.id,
-    }),
-  },
-  sosialMedia: {
-    user: r.one.user({
-      from: r.sosialMedia.userId,
-      to: r.user.id,
-    }),
-  },
+export const userRelations = relations(user as any, (helpers: any) => ({
+  sessions: helpers.many(session),
+  accounts: helpers.many(account),
+  refreshTokens: helpers.many(refreshToken),
+  sosialMedias: helpers.many(sosialMedia),
 }));
+
+export const accountRelations = relations(account as any, (helpers: any) => ({
+  user: helpers.one(user, {
+    fields: [account.userId],
+    references: [user.id],
+  }),
+}));
+
+export const sessionRelations = relations(session as any, (helpers: any) => ({
+  user: helpers.one(user, {
+    fields: [session.userId],
+    references: [user.id],
+  }),
+}));
+
+export const refreshTokenRelations = relations(refreshToken as any, (helpers: any) => ({
+  user: helpers.one(user, {
+    fields: [refreshToken.userId],
+    references: [user.id],
+  }),
+}));
+
+export const sosialMediaRelations = relations(sosialMedia as any, (helpers: any) => ({
+  user: helpers.one(user, {
+    fields: [sosialMedia.userId],
+    references: [user.id],
+  }),
+}));
+
+
+
