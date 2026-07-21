@@ -120,10 +120,14 @@ async function runUpgrade() {
 
   // Get current version of the framework package
   const currentFrameworkVersion = templatePkg.version || "latest";
-  if (!userPkg.devDependencies) userPkg.devDependencies = {};
-  if (userPkg.devDependencies["create-biawak-app"] !== `^${currentFrameworkVersion}`) {
-    console.log(`  ➕ DevDep: ${colors.yellow}create-biawak-app${colors.reset} -> ${colors.green}^${currentFrameworkVersion}${colors.reset}`);
-    userPkg.devDependencies["create-biawak-app"] = `^${currentFrameworkVersion}`;
+  if (!userPkg.dependencies) userPkg.dependencies = {};
+  if (userPkg.devDependencies && userPkg.devDependencies["create-biawak-app"]) {
+    delete userPkg.devDependencies["create-biawak-app"];
+    updated = true;
+  }
+  if (userPkg.dependencies["create-biawak-app"] !== `^${currentFrameworkVersion}`) {
+    console.log(`  ➕ Dep: ${colors.yellow}create-biawak-app${colors.reset} -> ${colors.green}^${currentFrameworkVersion}${colors.reset}`);
+    userPkg.dependencies["create-biawak-app"] = `^${currentFrameworkVersion}`;
     updated = true;
   }
 
@@ -140,7 +144,7 @@ async function runUpgrade() {
       "make:route": "biawak-make route",
       "make:middleware": "biawak-make middleware",
       "make:schema": "biawak-make schema",
-      "upgrade": "npx create-biawak-app upgrade"
+      "upgrade": "npx create-biawak-app@latest upgrade"
     };
 
     for (const [key, val] of Object.entries(makeCommandRewrites)) {
@@ -268,12 +272,12 @@ async function main() {
         pkgData.scripts["make:route"] = "biawak-make route";
         pkgData.scripts["make:middleware"] = "biawak-make middleware";
         pkgData.scripts["make:schema"] = "biawak-make schema";
-        pkgData.scripts.upgrade = "npx create-biawak-app upgrade";
+        pkgData.scripts.upgrade = "npx create-biawak-app@latest upgrade";
       }
 
-      // Add create-biawak-app as a devDependency to link binaries locally!
-      if (!pkgData.devDependencies) pkgData.devDependencies = {};
-      pkgData.devDependencies["create-biawak-app"] = `^${currentFrameworkVersion}`;
+      // Add create-biawak-app as a dependency to link binaries locally and declare framework version!
+      if (!pkgData.dependencies) pkgData.dependencies = {};
+      pkgData.dependencies["create-biawak-app"] = `^${currentFrameworkVersion}`;
 
       fs.writeFileSync(pkgPath, JSON.stringify(pkgData, null, 2), "utf-8");
     }

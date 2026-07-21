@@ -291,16 +291,46 @@ sidebar-sublist a[aria-current='page'] {
    💻 Astro Shiki Code Block Styles (Professional macOS/Studio Style)
    -------------------------------------------------------------------------- */
 pre.astro-code {
+  position: relative !important;
   background-color: #0b0f19 !important; /* Premium Obsidian Dark background */
-  border: 1px solid #e2e8f0 !important;
+  border: 1px solid #1e293b !important;
   border-radius: 12px !important;
-  padding: 1.25rem !important;
+  padding: 3rem 1.25rem 1.25rem 1.25rem !important; /* Extra top padding for title bar space */
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace !important;
   font-size: 0.875rem !important;
   line-height: 1.65 !important;
-  margin: 1.5rem 0 !important;
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05) !important;
+  margin: 2rem 0 !important;
+  box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.2), 0 0 20px -2px rgba(16, 185, 129, 0.1) !important;
   overflow-x: auto !important;
+}
+
+/* Code block macOS-style title bar header */
+pre.astro-code::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 2.25rem !important;
+  background-color: #080c14 !important; /* Even darker title bar background */
+  border-top-left-radius: 11px !important;
+  border-top-right-radius: 11px !important;
+  border-bottom: 1px solid #141b2b !important;
+}
+
+/* Code block macOS colored control dots */
+pre.astro-code::after {
+  content: "" !important;
+  position: absolute !important;
+  top: 0.65rem !important;
+  left: 1rem !important;
+  width: 44px !important;
+  height: 12px !important;
+  background: radial-gradient(circle, #ef4444 3.5px, transparent 4.5px) 0 0,
+              radial-gradient(circle, #fbbf24 3.5px, transparent 4.5px) 16px 0,
+              radial-gradient(circle, #10b981 3.5px, transparent 4.5px) 32px 0 !important;
+  background-size: 12px 12px !important;
+  background-repeat: no-repeat !important;
 }
 
 pre.astro-code code {

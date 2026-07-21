@@ -29,19 +29,23 @@ export default defineConfig({
         {
           label: "🚀 Getting Started",
           items: [
-            {
-              label: "Pengenalan & Instalasi",
-              slug: "getting-started/quick-start",
-            },
+            { label: "Pengenalan & Instalasi", slug: "getting-started/quick-start" },
+            { label: "Struktur Direktori Proyek", slug: "getting-started/structure" },
+          ],
+        },
+        {
+          label: "🛡️ Core Architecture",
+          items: [
+            { label: "Pembuatan Route & Validasi", slug: "core/routes" },
+            { label: "Sistem Middleware & Keamanan", slug: "core/middleware" },
           ],
         },
         {
           label: "🗄️ Database & ORM",
           items: [
-            {
-              label: "Zero-Config SQLite → Production MySQL",
-              slug: "database/sqlite-to-mysql",
-            },
+            { label: "SQLite → Production MySQL", slug: "database/sqlite-to-mysql" },
+            { label: "Strategi Dual-Schema", slug: "database/dual-schema" },
+            { label: "Alur Kerja Migrasi & Seeding", slug: "database/seeding-migrations" },
           ],
         },
         {
@@ -60,10 +64,7 @@ export default defineConfig({
         {
           label: "📦 Client & Realtime SDKs",
           items: [
-            {
-              label: "Paket NPM biawak-sdk (WebSocket)",
-              slug: "sdk/biawak-sdk",
-            },
+            { label: "Paket NPM biawak-sdk (WebSocket)", slug: "sdk/biawak-sdk" },
           ],
         },
         {
