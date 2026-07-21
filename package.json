@@ -5,12 +5,10 @@
   "author": "robyajo",
   "license": "MIT",
   "main": "src/index.ts",
-  "bin": {
-    "create-biawak-app": "./bin/create-biawak-app.mjs"
-  },
+  "bin": "./bin/create-biawak-app.mjs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/robyajo/biawak.git"
+    "url": "git+https://github.com/robyajo/biawak.git"
   },
   "homepage": "https://github.com/robyajo/biawak#readme",
   "keywords": [
@@ -34,7 +32,8 @@
     "db:seed": "bun run src/db/seed.ts",
     "db:reset": "bun run src/db/reset.ts",
     "collection": "tsx scripts/generate-collection.ts",
-    "collection:watch": "tsx scripts/generate-collection.ts --watch"
+    "collection:watch": "tsx scripts/generate-collection.ts --watch",
+    "release": "node bin/release.js"
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "^1.6.23",

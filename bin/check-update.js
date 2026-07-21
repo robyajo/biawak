@@ -2,17 +2,11 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
-// --- KONFIGURASI ---
-// Ganti URL ini dengan URL raw package.json dari repository GitHub/GitLab Anda
-// Contoh: 'https://raw.githubusercontent.com/username/project-name/main/package.json'
-// Jika package dipublish ke NPM, Anda bisa menggunakan registry NPM.
-const REPO_VERSION_URL = 'https://registry.npmjs.org/lapeeh/latest';
-const TIMEOUT = 2000; // Timeout 2 detik agar tidak terlalu lama menunggu
+const REPO_VERSION_URL = 'https://registry.npmjs.org/create-biawak-app/latest';
+const TIMEOUT = 2000;
 
 const packageJson = require('../package.json');
-// Cek apakah ada key "lapeeh" di dependencies (project user)
-// Jika tidak ada, fallback ke version package.json (mungkin ini repo framework itu sendiri)
-const currentVersion = packageJson.dependencies?.['lapeeh'] || packageJson.version;
+const currentVersion = packageJson.dependencies?.['create-biawak-app'] || packageJson.version;
 
 function checkForUpdates() {
     if (!REPO_VERSION_URL) return;
@@ -24,7 +18,6 @@ function checkForUpdates() {
         let data = '';
 
         if (res.statusCode !== 200) {
-            // Silent fail jika URL tidak bisa diakses
             return;
         }
 
@@ -35,8 +28,6 @@ function checkForUpdates() {
         res.on('end', () => {
             try {
                 const remoteJson = JSON.parse(data);
-                // Jika cek ke NPM, version ada di root object atau 'version'
-                // Jika cek ke raw github, structure sama dengan package.json
                 const latestVersion = remoteJson.version || remoteJson['dist-tags']?.latest;
 
                 if (latestVersion && isNewer(latestVersion, currentVersion)) {
@@ -75,7 +66,7 @@ function showUpdateMessage(latest, current) {
     console.log('\n');
     console.log(`${fgYellow}┌─────────────────────────────────────────────────────────────┐${reset}`);
     console.log(`${fgYellow}│                                                             │${reset}`);
-    console.log(`${fgYellow}│   ${bright}UPDATE FRAMEWORK TERSEDIA!${reset}${fgYellow}                                │${reset}`);
+    console.log(`${fgYellow}│   ${bright}UPDATE BIAWAK FRAMEWORK TERSEDIA!${reset}${fgYellow}                         │${reset}`);
     console.log(`${fgYellow}│                                                             │${reset}`);
     console.log(`${fgYellow}│   Versi Lokal   : ${fgCyan}${current}${reset}${fgYellow}                                      │${reset}`);
     console.log(`${fgYellow}│   Versi Terbaru : ${fgCyan}${latest}${reset}${fgYellow}                                      │${reset}`);
@@ -83,7 +74,7 @@ function showUpdateMessage(latest, current) {
     console.log(`${fgYellow}│   Silakan cek repository untuk melihat perubahan terbaru.   │${reset}`);
     console.log(`${fgYellow}│                                                             │${reset}`);
     console.log(`${fgYellow}│   Untuk upgrade jalankan:                                   │${reset}`);
-    console.log(`${fgYellow}│   ${fgCyan}npm install lapeeh@latest${reset}${fgYellow}                                    │${reset}`);
+    console.log(`${fgYellow}│   ${fgCyan}npm install create-biawak-app@latest${reset}${fgYellow}                         │${reset}`);
     console.log(`${fgYellow}│                                                             │${reset}`);
     console.log(`${fgYellow}└─────────────────────────────────────────────────────────────┘${reset}`);
     console.log('\n');
