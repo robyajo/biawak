@@ -3,7 +3,7 @@ import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { openAPI, customSession } from "better-auth/plugins";
 import { createAuthEndpoint } from "better-auth/api";
 import { db } from "./db/index.js";
-import * as authSchema from "./db/schema/user.js";
+import * as authSchema from "./db/schema/index.js";
 import { downloadAndSaveAvatar } from "./lib/avatar.js";
 import { eq } from "drizzle-orm";
 import { hashPassword, verifyPassword } from "./lib/crypto.js";
@@ -309,7 +309,7 @@ export const auth = betterAuth({
         openAPI(),
         socialProviders(),
         customSession(async ({ user, session }) => {
-            const [dbUser] = await db
+            const [dbUser] = await (db as any)
                 .select({ 
                     passwordHash: authSchema.user.passwordHash,
                     image: authSchema.user.image 
@@ -323,7 +323,7 @@ export const auth = betterAuth({
                 const downloaded = await downloadAndSaveAvatar(user.id, currentImage);
                 if (downloaded) {
                     currentImage = downloaded;
-                    await db
+                    await (db as any)
                         .update(authSchema.user)
                         .set({ image: downloaded })
                         .where(eq(authSchema.user.id, user.id));
@@ -360,7 +360,7 @@ export const auth = betterAuth({
         },
     },
     database: drizzleAdapter(db, {
-        provider: "mysql",
+        provider: (process.env.DB_DRIVER === "mysql" ? "mysql" : "sqlite") as any,
         schema: authSchema,
     }),
 });

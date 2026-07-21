@@ -7,6 +7,8 @@ const envSchema = z.object({
   APP_NAME: z.string().default("Biawak"),
   JWT_SECRET: z.string().default("super-secret-jwt-key-change-me"),
   JWT_EXPIRES_IN: z.string().default("7d"),
+  DB_DRIVER: z.enum(["sqlite", "mysql"]).default("sqlite"),
+  DB_FILE_NAME: z.string().default("sqlite.db"),
   DB_USER: z.string().default("root"),
   DB_PASSWORD: z.string().default("12341234"),
   DB_NAME: z.string().default("biawak"),

@@ -1,7 +1,6 @@
 import "dotenv/config";
 import { db } from "./index.js";
-import { user as UserTable } from "./schema/user.js";
-import { sosialMedia as SosialMediaTable } from "./schema/sosial-media.js";
+import { user as UserTable, sosialMedia as SosialMediaTable } from "./schema/index.js";
 import { hashPassword, upsertCredentialAccount } from "../lib/crypto.js";
 import { eq } from "drizzle-orm";
 import { auth } from "../auth.js";

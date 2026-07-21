@@ -2,29 +2,27 @@ import "dotenv/config";
 import { sql } from "drizzle-orm";
 import { db } from "./index.js";
 import { config } from "../config/drizzle.js";
-import { migrate } from "drizzle-orm/mysql2/migrator";
 import { seed } from "./seed.js";
 import fs from "node:fs";
 
 async function reset() {
-  console.log("🔄 Resetting MySQL database...");
+  console.log(`🔄 Resetting ${config.DB_DRIVER.toUpperCase()} database...`);
 
   try {
-    console.log("🗑️ Resetting MySQL database...");
-    await db.execute(sql`SET FOREIGN_KEY_CHECKS = 0;`);
-    await db.execute(sql`DROP DATABASE IF EXISTS \`${sql.raw(config.DB_NAME)}\`;`);
-    await db.execute(sql`CREATE DATABASE \`${sql.raw(config.DB_NAME)}\`;`);
-    await db.execute(sql`USE \`${sql.raw(config.DB_NAME)}\`;`);
-    await db.execute(sql`SET FOREIGN_KEY_CHECKS = 1;`);
-    console.log("✅ Database reset successfully!");
-
-    // Run migrations if migrations folder exists
-    if (fs.existsSync("./src/db/drizzle")) {
-      console.log("🔄 Running migrations...");
-      await migrate(db, { migrationsFolder: "./src/db/drizzle" });
-      console.log("✅ Migrations completed successfully!");
+    if (config.DB_DRIVER === "mysql") {
+      console.log("🗑️ Resetting MySQL database...");
+      await (db as any).execute(sql`SET FOREIGN_KEY_CHECKS = 0;`);
+      await (db as any).execute(sql`DROP DATABASE IF EXISTS \`${sql.raw(config.DB_NAME)}\`;`);
+      await (db as any).execute(sql`CREATE DATABASE \`${sql.raw(config.DB_NAME)}\`;`);
+      await (db as any).execute(sql`USE \`${sql.raw(config.DB_NAME)}\`;`);
+      await (db as any).execute(sql`SET FOREIGN_KEY_CHECKS = 1;`);
+      console.log("✅ Database reset successfully!");
     } else {
-      console.log("ℹ️ No migrations folder found, skipping migration step.");
+      console.log(`🗑️ Resetting SQLite database (${config.DB_FILE_NAME})...`);
+      if (fs.existsSync(config.DB_FILE_NAME)) {
+        fs.unlinkSync(config.DB_FILE_NAME);
+        console.log(`✅ Removed existing ${config.DB_FILE_NAME}`);
+      }
     }
 
     // Check if --seed argument is passed

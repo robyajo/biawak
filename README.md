@@ -1,9 +1,9 @@
 <div align="center">
 
-# 🚀 Biawak
+# 🚀 Biawak (`create-biawak-app`)
 
 **Production-Ready, High-Performance RESTful API & Real-Time Boilerplate**  
-*Powered by Bun, Hono v4, MySQL, Drizzle ORM, Better Auth & Hybrid JWT.*
+*Powered by Bun, Hono v4, Zero-Config SQLite, MySQL, Drizzle ORM, Better Auth & Hybrid JWT.*
 
 [![Bun](https://img.shields.io/badge/Bun-v1.3+-black?style=for-the-badge&logo=bun)](https://bun.sh)
 [![Hono](https://img.shields.io/badge/Hono-v4-orange?style=for-the-badge&logo=hono)](https://hono.dev)
@@ -102,11 +102,26 @@ biawak/
 
 ## ⚡ Quick Start & Installation
 
-### 1. Clone & Install Dependencies
+### Option A: Create New Project via Initializer (Recommended)
+
+```bash
+# Using Bun (Recommended)
+bun create biawak-app@latest my-app
+
+# Or using NPX
+npx create-biawak-app@latest my-app
+```
+
+The installer wizard will automatically set up your project directory, install dependencies, initialize a zero-config **SQLite** database (`sqlite.db`), and seed initial Admin & User accounts!
+
+---
+
+### Option B: Clone & Manual Setup
+
 ```bash
 git clone https://github.com/robyajo/biawak.git
 cd biawak
-npm install
+bun install
 ```
 
 ### 2. Configure Environment Variables
@@ -122,16 +137,17 @@ BASE_URL=http://localhost:8000
 APP_NAME="Biawak"
 APP_ENV=development
 
-# MySQL Connection
+# Database Configuration (sqlite | mysql)
+# Default is 'sqlite' so the app works out of the box without any DB server installation!
+DB_DRIVER=sqlite
+DB_FILE_NAME=sqlite.db
+
+# MySQL Connection (Set DB_DRIVER=mysql to use MySQL)
 DB_USER=root
 DB_PASSWORD=123
 DB_NAME=biawak
 DB_HOST=127.0.0.1
 DB_PORT=3306
-
-# JWT & Better Auth Security
-JWT_SECRET=super_secret_jwt_key_change_in_production_32_chars
-BETTER_AUTH_SECRET=your_better_auth_secret_minimum_32_characters_long
 ```
 
 ### 3. Setup Database Schema & Seed Data
