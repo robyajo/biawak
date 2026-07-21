@@ -62,11 +62,71 @@ console.log(`\n🚀 🦎 Biawak (${packageName}) Release Automation Script`);
 console.log(`Versi Lokal Saat Ini: v${currentVersion}\n`);
 
 // Helper to get npm version
-function getNpmVersion() {
+function getNpmVersion(targetName = packageName) {
     try {
-        return getCommandOutput(`npm view ${packageName} version`);
+        return getCommandOutput(`npm view ${targetName} version`);
     } catch (e) {
         return null;
+    }
+}
+
+async function publishSubPackage(subRelPath) {
+    const subPkgDir = path.join(rootDir, subRelPath);
+    const subPkgJsonPath = path.join(subPkgDir, 'package.json');
+    if (!fs.existsSync(subPkgJsonPath)) return;
+
+    const subPkg = JSON.parse(fs.readFileSync(subPkgJsonPath, 'utf8'));
+    const subName = subPkg.name;
+    const subCurrentVersion = subPkg.version || '1.0.0';
+    const subRemoteVersion = getNpmVersion(subName);
+    const subActiveVersion = subRemoteVersion || subCurrentVersion;
+    const subNextVersion = incrementPatch(subActiveVersion);
+
+    console.log(`\n--------------------------------------------------`);
+    console.log(`📦 Sub-Paket SDK: ${subName}`);
+    console.log(`📌 Versi NPM Aktif   : v${subActiveVersion}`);
+    console.log(`📌 Versi Lokal       : v${subCurrentVersion}`);
+    console.log(`📌 Versi Diusulkan   : v${subNextVersion}`);
+
+    const pubConfirm = await question(`❓ Apakah Anda ingin mempublikasikan versi baru ${subName} ke NPM Registry? (y/n): `);
+    if (pubConfirm.toLowerCase() !== 'y') {
+        console.log(`⏭️  Melewati publikasi ${subName}.`);
+        return;
+    }
+
+    const subVersionInput = await question(`Masukkan versi baru ${subName} (Default: ${subNextVersion}): `);
+    const subVersion = subVersionInput.trim() || subNextVersion;
+
+    updatePackageJsonVersion(subPkgJsonPath, subVersion);
+
+    console.log(`🔨 Building ${subName}...`);
+    try {
+        if (subName === 'ai-biawak-sdk') {
+            execSync('bun build ./src/index.ts --outdir ./dist --target node', { cwd: subPkgDir, stdio: 'inherit' });
+        } else {
+            execSync('bun build ./src/index.ts --outdir ./dist --target browser', { cwd: subPkgDir, stdio: 'inherit' });
+        }
+    } catch (e) {
+        console.log(`⚠️ Build warning for ${subName}:`, e.message);
+    }
+
+    console.log(`📦 Mempublikasikan ${subName}@${subVersion} ke NPM Registry...`);
+    try {
+        execSync('npm publish --access public', { cwd: subPkgDir, stdio: 'inherit' });
+        console.log(`🎉 Sub-paket ${subName}@${subVersion} berhasil dipublikasikan!`);
+    } catch (error) {
+        const details = error.combinedOutput || error.message || '';
+        if (isOtpError(details)) {
+            const otp = await question(`🔐 Masukkan kode OTP 2FA Authenticator untuk ${subName}: `);
+            if (otp && otp.trim() !== '') {
+                execSync(`npm publish --access public --otp=${otp.trim()}`, { cwd: subPkgDir, stdio: 'inherit' });
+                console.log(`🎉 Sub-paket ${subName}@${subVersion} berhasil dipublikasikan!`);
+            } else {
+                console.log(`⚠️ Publikasi ${subName} dibatalkan (OTP kosong).`);
+            }
+        } else {
+            console.log(`⚠️ Gagal mempublikasikan ${subName}:`, details);
+        }
     }
 }
 
@@ -266,20 +326,9 @@ async function main() {
             execSync('npm publish --access public', { stdio: 'inherit' });
             console.log(`\n🎉 Paket ${packageName}@${newVersion} berhasil dipublikasikan ke NPM!`);
 
-            // Publish Sub-packages (ai-biawak-sdk & biawak-sdk)
-            const subPackages = ['packages/ai-biawak-sdk', 'packages/biawak-sdk'];
-            for (const subPkg of subPackages) {
-                const subPkgDir = path.join(rootDir, subPkg);
-                if (fs.existsSync(path.join(subPkgDir, 'package.json'))) {
-                    try {
-                        console.log(`\n📦 Mempublikasikan sub-paket ${subPkg}...`);
-                        execSync('npm publish --access public', { cwd: subPkgDir, stdio: 'inherit' });
-                        console.log(`🎉 Sub-paket ${subPkg} berhasil dipublikasikan!`);
-                    } catch (err) {
-                        console.log(`⚠️ Gagal mempublikasikan ${subPkg}:`, err.message);
-                    }
-                }
-            }
+            // Publish Sub-packages (ai-biawak-sdk & biawak-sdk) with interactive prompts & auto versioning
+            await publishSubPackage('packages/ai-biawak-sdk');
+            await publishSubPackage('packages/biawak-sdk');
         } catch (error) {
             const details = error.combinedOutput || error.message || '';
 
@@ -289,6 +338,8 @@ async function main() {
                 if (otp && otp.trim() !== '') {
                     execSync(`npm publish --access public --otp=${otp.trim()}`, { stdio: 'inherit' });
                     console.log(`\n🎉 Paket ${packageName}@${newVersion} berhasil dipublikasikan ke NPM!`);
+                    await publishSubPackage('packages/ai-biawak-sdk');
+                    await publishSubPackage('packages/biawak-sdk');
                 } else {
                     console.log('❌ NPM publish dibatalkan karena OTP kosong.');
                     throw error;
