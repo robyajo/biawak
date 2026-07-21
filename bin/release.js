@@ -95,7 +95,15 @@ async function publishSubPackage(subRelPath) {
     }
 
     const subVersionInput = await question(`Masukkan versi baru ${subName} (Default: ${subNextVersion}): `);
-    const subVersion = subVersionInput.trim() || subNextVersion;
+    let subVersion = subVersionInput.trim();
+    if (!subVersion || subVersion.toLowerCase() === 'y' || subVersion.toLowerCase() === 'yes') {
+        subVersion = subNextVersion;
+    }
+    const semverRegex = /^\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?$/;
+    if (!semverRegex.test(subVersion)) {
+        console.log(`❌ Format versi "${subVersion}" tidak valid! Menggunakan default: ${subNextVersion}`);
+        subVersion = subNextVersion;
+    }
 
     updatePackageJsonVersion(subPkgJsonPath, subVersion);
 
@@ -263,10 +271,14 @@ async function main() {
         }
 
         const newVersionInput = await question(`\nMasukkan versi baru (Default: ${nextVersion}): `);
-        const newVersion = newVersionInput.trim() || nextVersion;
+        let newVersion = newVersionInput.trim();
+        if (!newVersion || newVersion.toLowerCase() === 'y' || newVersion.toLowerCase() === 'yes') {
+            newVersion = nextVersion;
+        }
 
-        if (!newVersion) {
-            console.log('❌ Versi harus diisi!');
+        const semverRegex = /^\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?$/;
+        if (!semverRegex.test(newVersion)) {
+            console.log(`❌ Error: Format versi "${newVersion}" tidak valid! Harus mengikuti format SemVer (cth: 1.0.9).`);
             process.exit(1);
         }
 
