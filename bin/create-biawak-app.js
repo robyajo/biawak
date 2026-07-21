@@ -118,6 +118,40 @@ async function runUpgrade() {
   syncDeps("dependencies");
   syncDeps("devDependencies");
 
+  // Get current version of the framework package
+  const currentFrameworkVersion = templatePkg.version || "latest";
+  if (!userPkg.devDependencies) userPkg.devDependencies = {};
+  if (userPkg.devDependencies["create-biawak-app"] !== `^${currentFrameworkVersion}`) {
+    console.log(`  ➕ DevDep: ${colors.yellow}create-biawak-app${colors.reset} -> ${colors.green}^${currentFrameworkVersion}${colors.reset}`);
+    userPkg.devDependencies["create-biawak-app"] = `^${currentFrameworkVersion}`;
+    updated = true;
+  }
+
+  // Cleanup scripts block in user's package.json
+  if (userPkg.scripts) {
+    if (userPkg.scripts.release) {
+      console.log(`  ➖ Remove dev-only script: ${colors.red}release${colors.reset}`);
+      delete userPkg.scripts.release;
+      updated = true;
+    }
+    
+    const makeCommandRewrites = {
+      "make": "biawak-make",
+      "make:route": "biawak-make route",
+      "make:middleware": "biawak-make middleware",
+      "make:schema": "biawak-make schema",
+      "upgrade": "npx create-biawak-app upgrade"
+    };
+
+    for (const [key, val] of Object.entries(makeCommandRewrites)) {
+      if (userPkg.scripts[key] !== val) {
+        console.log(`  🔧 Rewrite script: ${colors.yellow}${key}${colors.reset} -> ${colors.green}${val}${colors.reset}`);
+        userPkg.scripts[key] = val;
+        updated = true;
+      }
+    }
+  }
+
   if (updated) {
     fs.writeFileSync(pkgPath, JSON.stringify(userPkg, null, 2), "utf-8");
     console.log(`\n${colors.green}✔ Updated package.json successfully!${colors.reset}`);
@@ -218,9 +252,29 @@ async function main() {
       const pkgData = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
       pkgData.name = projectName;
       pkgData.version = "0.1.0";
+
+      // Get current version of the framework package
+      const templatePkgPath = path.resolve(__dirname, "../package.json");
+      const templatePkg = JSON.parse(fs.readFileSync(templatePkgPath, "utf-8"));
+      const currentFrameworkVersion = templatePkg.version || "latest";
+
+      // Remove developer-only fields & scripts
       delete pkgData.bin;
-      if (!pkgData.scripts) pkgData.scripts = {};
-      pkgData.scripts.upgrade = "npx create-biawak-app upgrade";
+      if (pkgData.scripts) {
+        delete pkgData.scripts.release; // Remove developer-only release script
+        
+        // Rewrite make scripts to use local bin mapping instead of raw path node bin/biawak-make.js
+        pkgData.scripts.make = "biawak-make";
+        pkgData.scripts["make:route"] = "biawak-make route";
+        pkgData.scripts["make:middleware"] = "biawak-make middleware";
+        pkgData.scripts["make:schema"] = "biawak-make schema";
+        pkgData.scripts.upgrade = "npx create-biawak-app upgrade";
+      }
+
+      // Add create-biawak-app as a devDependency to link binaries locally!
+      if (!pkgData.devDependencies) pkgData.devDependencies = {};
+      pkgData.devDependencies["create-biawak-app"] = `^${currentFrameworkVersion}`;
+
       fs.writeFileSync(pkgPath, JSON.stringify(pkgData, null, 2), "utf-8");
     }
 
