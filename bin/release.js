@@ -1,7 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const readline = require('readline');
-const { execSync } = require('child_process');
+import fs from 'node:fs';
+import path from 'node:path';
+import readline from 'node:readline';
+import { execSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -49,12 +53,13 @@ const rootDir = path.resolve(__dirname, '..');
 const packageJsonPath = path.join(rootDir, 'package.json');
 
 // Read current package details
-const pkg = require(packageJsonPath);
+const pkgContent = fs.readFileSync(packageJsonPath, 'utf8');
+const pkg = JSON.parse(pkgContent);
 const packageName = pkg.name || 'create-biawak-app';
-const currentVersion = pkg.version || '1.0.0';
+const currentVersion = pkg.version || '1.0.1';
 
 console.log(`\n🚀 🦎 Biawak (${packageName}) Release Automation Script`);
-console.log(`Current Version: v${currentVersion}\n`);
+console.log(`Versi Lokal Saat Ini: v${currentVersion}\n`);
 
 // Helper to get npm version
 function getNpmVersion() {
@@ -114,7 +119,7 @@ function updatePackageJsonVersion(filePath, version) {
     const json = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     json.version = version;
     fs.writeFileSync(filePath, JSON.stringify(json, null, 2) + '\n');
-    console.log(`Updated ${path.basename(filePath)} to v${version}`);
+    console.log(`✅ Updated ${path.basename(filePath)} to v${version}`);
 }
 
 function createReleaseBlogPost(version, summaryNotes) {
@@ -126,8 +131,6 @@ function createReleaseBlogPost(version, summaryNotes) {
 
         const slugVersion = version.replace(/\./g, '-');
         const blogFilePath = path.join(blogDir, `v${slugVersion}.md`);
-
-        const dateStr = new Date().toISOString().split('T')[0];
 
         const content = `---
 title: "Biawak v${version} Release Notes 🦎"
@@ -162,7 +165,7 @@ npm install create-biawak-app@latest
 async function main() {
     try {
         // 0. Quick Git Update Check
-        const quickGit = await question('\n⚡ Apakah ini hanya Quick Git Update (tanpa release versi NPM baru)? (y/n): ');
+        const quickGit = await question('⚡ Apakah ini hanya Quick Git Update (tanpa release versi NPM baru)? (y/n): ');
         if (quickGit.toLowerCase() === 'y') {
             console.log('\n🤖 Auto-generating commit message...');
             const commitMsg = generateAutoCommitMessage();
@@ -180,17 +183,27 @@ async function main() {
             }
         }
 
-        // 1. Check npm version
-        console.log('\n🔍 Checking npm registry version...');
+        // 1. Version Detection & NPM Release Warning
+        console.log('\n🔍 Memeriksa versi aktif di NPM Registry...');
         const npmVersion = getNpmVersion();
-        const baseVersion = npmVersion || currentVersion;
-        const suggestedVersion = incrementPatch(baseVersion);
+        const activeVersion = npmVersion || currentVersion;
+        const nextVersion = incrementPatch(activeVersion);
 
-        console.log(`Latest npm version: ${npmVersion || 'Belum dipublikasikan (menggunakan lokal)'}`);
-        console.log(`Current local version: v${currentVersion}`);
+        console.log(`📌 Versi NPM Aktif   : v${npmVersion || activeVersion}`);
+        console.log(`📌 Versi Lokal Saat Ini : v${currentVersion}`);
+        console.log(`📌 Versi Baru Diusulkan : v${nextVersion}`);
 
-        const newVersionInput = await question(`Masukkan versi baru (default patch: ${suggestedVersion}): `);
-        const newVersion = newVersionInput.trim() || suggestedVersion;
+        // Peringatan Pengecekan Versi Spesifik NPM
+        console.log(`\n⚠️  PERINGATAN RILIS NPM: Versi aktif saat ini adalah v${activeVersion}.`);
+        const confirmNpmRelease = await question(`❓ Apakah Anda yakin ingin mempublikasikan versi v${nextVersion} ke NPM Registry? (y/n): `);
+
+        if (confirmNpmRelease.toLowerCase() !== 'y') {
+            console.log('\n🛑 Release ke NPM dibatalkan oleh pengguna.');
+            process.exit(0);
+        }
+
+        const newVersionInput = await question(`\nMasukkan versi baru (Default: ${nextVersion}): `);
+        const newVersion = newVersionInput.trim() || nextVersion;
 
         if (!newVersion) {
             console.log('❌ Versi harus diisi!');
@@ -201,10 +214,11 @@ async function main() {
         console.log('\n📦 Updating package.json...');
         updatePackageJsonVersion(packageJsonPath, newVersion);
 
-        // 2. Commit & Tag Git
-        const pushGit = await question('\n🚀 1. Publish & push ke Git (Commit & Tag)? (y/n): ');
+        // 2. Commit & Tag Git (Optional)
+        const pushGit = await question('\n🚀 Commit & Push versi baru ke Git Repository (Commit & Tag)? (y/n): ');
+        let releaseTitle = '';
         if (pushGit.toLowerCase() === 'y') {
-            const releaseTitle = await question('Masukkan rincian singkat perubahan (Opsional, cth: fix sqlite driver): ');
+            releaseTitle = await question('Masukkan rincian singkat perubahan (Opsional, cth: fix sqlite driver): ');
             
             // Auto-generate website blog release post
             createReleaseBlogPost(newVersion, releaseTitle);
@@ -234,49 +248,47 @@ async function main() {
 
             console.log('✅ Git commit & tag berhasil dipush!');
         } else {
+            createReleaseBlogPost(newVersion, 'Release v' + newVersion);
             console.log('⏭️  Melewati langkah Git push.');
         }
 
         // 3. NPM Publish
-        const publishNpm = await question('\n📦 2. Publish paket ke NPM Registry? (y/n): ');
-        if (publishNpm.toLowerCase() === 'y') {
-            const npmUser = getNpmUser();
-            if (npmUser) {
-                console.log(`👤 NPM login aktif sebagai: ${npmUser}`);
-            } else {
-                console.log('⚠️  Tidak mendeteksi user NPM. Pastikan sudah login dengan `npm login`.');
-            }
+        const npmUser = getNpmUser();
+        if (npmUser) {
+            console.log(`\n👤 NPM login aktif sebagai: ${npmUser}`);
+        } else {
+            console.log('\n⚠️  Tidak mendeteksi user NPM. Pastikan sudah login dengan `npm login`.');
+        }
 
-            try {
-                execSync('npm publish --access public', { stdio: 'inherit' });
-                console.log(`\n🎉 Paket ${packageName}@${newVersion} berhasil dipublikasikan ke NPM!`);
-            } catch (error) {
-                const details = error.combinedOutput || error.message || '';
+        console.log(`\n📦 Mempublikasikan paket ${packageName}@${newVersion} ke NPM Registry...`);
 
-                if (isOtpError(details)) {
-                    console.log('\n⚠️  NPM Publish membutuhkan kode OTP 2FA.');
-                    const otp = await question('🔐 Masukkan kode OTP Authenticator Anda: ');
-                    if (otp && otp.trim() !== '') {
-                        execSync(`npm publish --access public --otp=${otp.trim()}`, { stdio: 'inherit' });
-                        console.log(`\n🎉 Paket ${packageName}@${newVersion} berhasil dipublikasikan ke NPM!`);
-                    } else {
-                        console.log('❌ NPM publish dibatalkan karena OTP kosong.');
-                        throw error;
-                    }
-                } else if (isPermissionError(details)) {
-                    console.log(`\n❌ NPM Publish gagal. Pastikan versi v${newVersion} belum pernah dipublish sebelumnya.`);
-                    if (npmUser) {
-                        console.log(`ℹ️  User aktif: ${npmUser}`);
-                    }
-                    throw error;
+        try {
+            execSync('npm publish --access public', { stdio: 'inherit' });
+            console.log(`\n🎉 Paket ${packageName}@${newVersion} berhasil dipublikasikan ke NPM!`);
+        } catch (error) {
+            const details = error.combinedOutput || error.message || '';
+
+            if (isOtpError(details)) {
+                console.log('\n⚠️  NPM Publish membutuhkan kode OTP 2FA.');
+                const otp = await question('🔐 Masukkan kode OTP Authenticator Anda: ');
+                if (otp && otp.trim() !== '') {
+                    execSync(`npm publish --access public --otp=${otp.trim()}`, { stdio: 'inherit' });
+                    console.log(`\n🎉 Paket ${packageName}@${newVersion} berhasil dipublikasikan ke NPM!`);
                 } else {
-                    console.log('\n❌ NPM Publish gagal.');
-                    if (details) console.log(details);
+                    console.log('❌ NPM publish dibatalkan karena OTP kosong.');
                     throw error;
                 }
+            } else if (isPermissionError(details)) {
+                console.log(`\n❌ NPM Publish gagal. Pastikan versi v${newVersion} belum pernah dipublish sebelumnya.`);
+                if (npmUser) {
+                    console.log(`ℹ️  User aktif: ${npmUser}`);
+                }
+                throw error;
+            } else {
+                console.log('\n❌ NPM Publish gagal.');
+                if (details) console.log(details);
+                throw error;
             }
-        } else {
-            console.log('⏭️  Melewati langkah NPM publish.');
         }
 
         console.log('\n✨ Process Release Selesai!');
