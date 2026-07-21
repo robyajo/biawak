@@ -110,6 +110,7 @@ async function main() {
       "sqlite.db-journal",
       ".env",
       "bin",
+      "website",
       ".DS_Store",
     ];
 

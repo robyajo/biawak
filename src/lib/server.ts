@@ -20,14 +20,19 @@ export function ensureStorageDirs(): void {
 /**
  * Configures process signal handlers for graceful server and database shutdown.
  */
-export function setupGracefulShutdown(server: Server<any>, connectionPool: { end: () => Promise<void> }): void {
+export function setupGracefulShutdown(server: Server<any>, connectionPool?: { end?: () => Promise<void> } | null): void {
   function shutdown(signal: string) {
     console.log(`\n${signal} received. Shutting down gracefully...`);
     server.stop(true);
-    connectionPool.end().then(() => {
-      console.log("Database connections closed. Exiting.");
+    if (connectionPool && typeof connectionPool.end === "function") {
+      connectionPool.end().then(() => {
+        console.log("Database connections closed. Exiting.");
+        process.exit(0);
+      });
+    } else {
+      console.log("Exiting.");
       process.exit(0);
-    });
+    }
     setTimeout(() => process.exit(1), 3000);
   }
 

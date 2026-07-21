@@ -132,4 +132,5 @@ console.log(`🚀 Server is running on http://localhost:${server.port}`);
 
 setupGracefulShutdown(server, connectionPool);
 
+export { app, server };
 export default server;

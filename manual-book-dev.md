@@ -18,9 +18,13 @@ Welcome to the **Biawak** project manual! This guide provides full context, setu
 |---|---|---|
 | **Runtime & Package Manager** | **Bun** (`v1.3+`) | Ultra-fast JavaScript/TypeScript engine & package manager |
 | **Web Framework** | **Hono** (`v4.x`) | Lightweight web framework optimized for Bun |
-| **Database** | **MySQL** (`v8.0+`) | Relational database accessed via `mysql2` client |
+| **Default Database** | **SQLite** | Zero-config file-based database (`sqlite.db`) via `bun:sqlite` |
+| **Production Database** | **MySQL** (`v8.0+`) | Relational database accessed via `mysql2` client (`DB_DRIVER=mysql`) |
 | **ORM** | **Drizzle ORM** | Type-safe SQL schema definition & relational query builder |
 | **Authentication** | **Better Auth** & **JWT** | Hybrid authentication (Better Auth sessions + JWT Bearer rotation) |
+| **Test Runner** | **Bun Test** | Automated integration testing framework (`tests/api.test.ts`) |
+| **Code Generators** | **Biawak Make CLI** | Route & middleware scaffolder (`bun run make:route`, `bun run make:middleware`) |
+| **CI/CD Pipeline** | **GitHub Actions** | Automated build & test workflow (`.github/workflows/ci.yml`) |
 | **Background Queue** | **BullMQ & Redis** *(Optional)* | Redis-backed task queue with automatic fallback when disabled |
 | **Real-time WebSockets** | **Hono + Bun WS** *(Optional)* | High-performance native WebSocket server on path `/ws` |
 | **Process Manager** | **PM2** | Production process management using native Bun interpreter |
@@ -37,11 +41,21 @@ biawak/
 ├── .env.example          # Environment template
 ├── docker-compose.yml    # Docker services (MySQL on 3306 & Redis on port 6380:6379)
 ├── ecosystem.config.cjs  # PM2 production configuration with Bun interpreter
-├── drizzle.config.ts     # Drizzle Kit configuration (MySQL dialect)
+├── drizzle.config.ts     # Drizzle Kit dual-dialect configuration (SQLite & MySQL)
 ├── package.json          # Dependencies & scripts
 ├── finish.sh             # Production build & schema deployment script
 ├── gitdone.sh            # Git cleanup script
 ├── manual-book-dev.md    # Developer manual documentation
+├── .github/
+│   └── workflows/
+│       └── ci.yml        # GitHub Actions CI/CD automated build & test workflow
+├── bin/
+│   ├── create-biawak-app.js # CLI project initializer script
+│   ├── biawak-make.js       # Code generator CLI (make:route, make:middleware, make:schema)
+│   ├── release.js           # Automated versioning & NPM publish script
+│   └── check-update.js      # CLI update checker utility
+├── tests/
+│   └── api.test.ts       # Integration test suite (bun test)
 └── src/
     ├── index.ts          # Main Bun server entry point & middleware mounting
     ├── auth.ts           # Better Auth instance & social OAuth provider setup

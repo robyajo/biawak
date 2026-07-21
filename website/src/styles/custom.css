@@ -1,0 +1,149 @@
+/* Light Mode Only - Ultra Modern Aesthetic Design System for biawak.web.id */
+
+:root,
+[data-theme='dark'],
+[data-theme='light'] {
+  --sl-color-accent-low: #ecfdf5;
+  --sl-color-accent: #059669;
+  --sl-color-accent-high: #064e3b;
+  --sl-color-white: #0f172a;
+  --sl-color-gray-1: #1e293b;
+  --sl-color-gray-2: #334155;
+  --sl-color-gray-3: #64748b;
+  --sl-color-gray-4: #94a3b8;
+  --sl-color-gray-5: #e2e8f0;
+  --sl-color-gray-6: #f8fafc;
+  --sl-color-black: #ffffff;
+  --sl-color-bg: #ffffff;
+  --sl-color-bg-nav: rgba(255, 255, 255, 0.85);
+  --sl-color-bg-sidebar: #f8fafc;
+  --sl-color-hairline-light: #e2e8f0;
+  --sl-color-hairline: #cbd5e1;
+}
+
+/* Hide theme select dropdown since site is Light Mode Only */
+starlight-theme-select {
+  display: none !important;
+}
+
+/* Glassmorphism Header & Soft Gradient Background */
+header.header {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(12px) saturate(180%);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
+}
+
+/* Hero Section Styling */
+.hero {
+  background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.12) 0%, rgba(248, 250, 252, 0.5) 70%, #ffffff 100%) !important;
+  padding-bottom: 3rem !important;
+}
+
+.hero .copy .title {
+  color: #0f172a !important;
+  font-size: 2.75rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.025em !important;
+}
+
+.hero .copy .tagline {
+  color: #475569 !important;
+  font-size: 1.25rem !important;
+  line-height: 1.6 !important;
+}
+
+.hero .action.primary {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+  padding: 0.75rem 1.75rem !important;
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.35) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.hero .action.primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 15px 30px -5px rgba(16, 185, 129, 0.45) !important;
+}
+
+.hero .action.minimal {
+  color: #059669 !important;
+  background: #f0fdf4 !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+  font-weight: 600 !important;
+  border-radius: 10px !important;
+  transition: all 0.2s ease !important;
+}
+
+.hero .action.minimal:hover {
+  background: #d1fae5 !important;
+  color: #047857 !important;
+}
+
+/* Feature Cards */
+.card {
+  border: 1px solid #e2e8f0 !important;
+  background: #ffffff !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05) !important;
+  border-radius: 16px !important;
+  padding: 1.75rem !important;
+  transition: all 0.25s ease !important;
+}
+
+.card:hover {
+  border-color: #10b981 !important;
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(16, 185, 129, 0.12), 0 8px 10px -6px rgba(16, 185, 129, 0.08) !important;
+}
+
+.card .title {
+  color: #0f172a !important;
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+}
+
+.card p {
+  color: #475569 !important;
+  line-height: 1.6 !important;
+}
+
+/* Code Blocks & Expressive Code */
+.expressive-code {
+  border-radius: 12px !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Sidebar navigation */
+sidebar-sublist a[aria-current='page'] {
+  background: #ecfdf5 !important;
+  color: #047857 !important;
+  font-weight: 700 !important;
+  border-left: 3px solid #10b981 !important;
+  border-radius: 0 6px 6px 0 !important;
+}
+
+/* Quickstart Command Banner */
+.quickstart-box {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%) !important;
+  border: 1px solid #a7f3d0 !important;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.1) !important;
+  padding: 1.5rem !important;
+  border-radius: 14px !important;
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.quickstart-code {
+  background: #0f172a !important;
+  color: #34d399 !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 1.05rem !important;
+  font-weight: 600 !important;
+  padding: 0.6rem 1.25rem !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15) !important;
+  display: inline-block;
+  margin-top: 0.5rem;
+}

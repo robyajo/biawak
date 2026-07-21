@@ -1,0 +1,18 @@
+# Exclude local database files and logs from NPM package tarball
+sqlite.db
+sqlite.db-journal
+.env
+*.log
+src/storage/log/*.log
+
+# Exclude OS and temporary files
+.DS_Store
+Thumbs.db
+test-*
+
+# Exclude git & build output
+.git
+.github
+dist
+node_modules
+website

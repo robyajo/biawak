@@ -1,12 +1,14 @@
 {
   "name": "create-biawak-app",
   "version": "1.0.1",
+  "type": "module",
   "description": "High-Performance RESTful API & Real-Time Boilerplate powered by Hono, Bun, SQLite & MySQL",
   "author": "robyajo",
   "license": "MIT",
   "main": "src/index.ts",
   "bin": {
-    "create-biawak-app": "bin/create-biawak-app.js"
+    "create-biawak-app": "bin/create-biawak-app.js",
+    "biawak-make": "bin/biawak-make.js"
   },
   "repository": {
     "type": "git",
@@ -33,8 +35,10 @@
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "bun run src/db/seed.ts",
     "db:reset": "bun run src/db/reset.ts",
-    "collection": "tsx scripts/generate-collection.ts",
-    "collection:watch": "tsx scripts/generate-collection.ts --watch",
+    "test": "bun test",
+    "make:route": "node bin/biawak-make.js route",
+    "make:middleware": "node bin/biawak-make.js middleware",
+    "make:schema": "node bin/biawak-make.js schema",
     "release": "node bin/release.js"
   },
   "dependencies": {

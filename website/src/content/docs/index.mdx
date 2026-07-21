@@ -1,0 +1,64 @@
+---
+title: Biawak Framework 🦎
+description: Production-Ready, High-Performance RESTful API Framework powered by Bun, Hono v4, Zero-Config SQLite & MySQL.
+template: splash
+hero:
+  tagline: "Kadal Kampung, Performa Metropolitan! Starts instantly with zero-config SQLite, scales seamlessly to production MySQL."
+  actions:
+    - text: Mulai Sekarang 🚀
+      link: /getting-started/quick-start/
+      icon: right-arrow
+      variant: primary
+    - text: NPM Package (v1.0.1)
+      link: https://www.npmjs.com/package/create-biawak-app
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<div className="quickstart-box">
+  <p style={{ margin: 0, fontWeight: 700, color: '#047857', fontSize: '1.1rem' }}>⚡ Buat Proyek Baru Dalam Hitungan Detik:</p>
+  <code className="quickstart-code">
+    bun create biawak-app@latest my-app
+  </code>
+</div>
+
+## 🌟 Fitur Utama & Keunggulan
+
+<CardGrid stagger>
+	<Card title="⚡ Performa Super Cepat" icon="rocket">
+		Ditenagai oleh **Bun v1.3+** runtime dan **Hono v4** web framework yang mampu menangani puluhan ribu request per detik dengan latensi minimal.
+	</Card>
+
+	<Card title="🗄️ Zero-Config SQLite → MySQL" icon="setting">
+		Langsung jalan tanpa install database server menggunakan **SQLite** (`sqlite.db`). Cukup ubah `DB_DRIVER=mysql` di `.env` untuk beralih ke MySQL saat production!
+	</Card>
+
+	<Card title="🔐 Hybrid Authentication" icon="shieldCheck">
+		Mendukung **Better Auth** session cookies serta **JWT Bearer Token** (Access Token 15 mnt + Refresh Token 7 hari auto-rotation) & Google OAuth Sign-In.
+	</Card>
+
+	<Card title="🦎 Biawak Code Scaffolder" icon="pencil">
+		Fitur CLI bawaan `bun run make:route`, `make:middleware`, dan `make:schema` terisolasi di `node_modules` untuk mempercepat development.
+	</Card>
+
+	<Card title="📡 Real-time WebSockets & BullMQ" icon="laptop">
+		Dukungan native WebSockets (`/ws`) serta pemrosesan task antrean background **BullMQ + Redis** dengan aman.
+	</Card>
+
+	<Card title="📄 Interactive Swagger UI & OpenAPI 3.0" icon="open-book">
+		Dokumentasi API interaktif otomatis di `/api/doc` dan skema OpenAPI 3.0 JSON di `/api/openapi`.
+	</Card>
+</CardGrid>
+
+---
+
+## 🔑 Akun Bawaan Seeding Data
+
+Saat proyek baru dibuat, sistem secara otomatis menginisialisasi database dan akun default:
+
+| Peran | Email | Password | Hak Akses |
+|---|---|---|---|
+| 👑 **Admin** | `admin@gmail.com` | `Password123` | Full Admin Privileges |
+| 👤 **User** | `user@gmail.com` | `Password123` | Standard User |

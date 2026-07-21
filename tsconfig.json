@@ -15,6 +15,9 @@
     "jsxImportSource": "hono/jsx"
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "tests",
+    "dist",
+    "website"
   ]
 }

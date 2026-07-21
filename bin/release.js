@@ -117,6 +117,48 @@ function updatePackageJsonVersion(filePath, version) {
     console.log(`Updated ${path.basename(filePath)} to v${version}`);
 }
 
+function createReleaseBlogPost(version, summaryNotes) {
+    try {
+        const blogDir = path.join(rootDir, 'website', 'src', 'content', 'docs', 'blog');
+        if (!fs.existsSync(blogDir)) {
+            fs.mkdirSync(blogDir, { recursive: true });
+        }
+
+        const slugVersion = version.replace(/\./g, '-');
+        const blogFilePath = path.join(blogDir, `v${slugVersion}.md`);
+
+        const dateStr = new Date().toISOString().split('T')[0];
+
+        const content = `---
+title: "Biawak v${version} Release Notes 🦎"
+description: "Catatan rilis resmi Biawak v${version} - ${summaryNotes || 'Pembaruan dan peningkatan fitur terbaru.'}"
+---
+
+## 🦎 Apa yang Baru di Biawak v${version}?
+
+${summaryNotes ? `- 🚀 **Pembaruan Fitur**: ${summaryNotes}` : '- 🚀 **Pembaruan & Perbaikan**: Peningkatan performa dan pemeliharaan arsitektur.'}
+- 🛡️ **Stabilitas & Keamanan**: Pembaruan dependensi dan optimasi runtime Bun + Hono.
+
+---
+
+### 🚀 Cara Upgrade Proyek Anda:
+
+\`\`\`bash
+# Menggunakan Bun
+bun update create-biawak-app@latest
+
+# Atau menggunakan NPM
+npm install create-biawak-app@latest
+\`\`\`
+`;
+
+        fs.writeFileSync(blogFilePath, content, 'utf-8');
+        console.log(`📝 [Website Blog] Auto-generated release post: website/src/content/docs/blog/v${slugVersion}.md`);
+    } catch (e) {
+        console.log('⚠️  Gagal membuat berkas blog rilis otomatis:', e.message);
+    }
+}
+
 async function main() {
     try {
         // 0. Quick Git Update Check
@@ -163,6 +205,10 @@ async function main() {
         const pushGit = await question('\n🚀 1. Publish & push ke Git (Commit & Tag)? (y/n): ');
         if (pushGit.toLowerCase() === 'y') {
             const releaseTitle = await question('Masukkan rincian singkat perubahan (Opsional, cth: fix sqlite driver): ');
+            
+            // Auto-generate website blog release post
+            createReleaseBlogPost(newVersion, releaseTitle);
+
             const commitMsg = releaseTitle ? `chore: release v${newVersion} - ${releaseTitle}` : `chore: release v${newVersion}`;
 
             try {

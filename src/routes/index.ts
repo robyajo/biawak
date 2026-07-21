@@ -98,7 +98,11 @@ api.get(
   }),
   async (c) => {
     try {
-      await db.execute(sql`SELECT 1`);
+      if (typeof (db as any).run === "function") {
+        await (db as any).run(sql`SELECT 1`);
+      } else {
+        await (db as any).execute(sql`SELECT 1`);
+      }
       return c.json(
         {
           status: "healthy",
