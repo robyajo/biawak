@@ -1,6 +1,6 @@
 {
   "name": "create-biawak-app",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "type": "module",
   "description": "High-Performance RESTful API & Real-Time Boilerplate powered by Hono, Bun, SQLite & MySQL",
   "author": "robyajo",
