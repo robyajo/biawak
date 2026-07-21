@@ -49,8 +49,7 @@ if (type === "route") {
   }
 
   const routeContent = `import { Hono } from "hono";
-import { describeRoute } from "hono-openapi";
-import { resolver } from "hono-openapi/zod";
+import { describeRoute, resolver } from "hono-openapi";
 import z from "zod";
 
 const ${camelCaseName}Router = new Hono();
