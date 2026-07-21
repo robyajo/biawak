@@ -1,9 +1,9 @@
 ---
 title: Biawak Framework
-description: Production-Ready, High-Performance RESTful API Framework powered by Bun, Hono v4, Zero-Config SQLite & MySQL.
+description: Production-Ready, High-Performance RESTful API Framework powered by Bun, Hono v4, Zero-Config SQLite & MySQL, with Flexible Multi-Model AI Engine.
 template: splash
 hero:
-  tagline: "Kadal Kampung, Performa Metropolitan! Starts instantly with zero-config SQLite, scales seamlessly to production MySQL."
+  tagline: "Kadal Kampung, Performa Metropolitan! High-Performance Hono + Bun RESTful API, Terintegrasi AI Multi-Model & WebSocket Real-Time."
   image:
     file: ../../assets/logo-biawak.png
   actions:
@@ -11,7 +11,7 @@ hero:
       link: /getting-started/quick-start/
       icon: right-arrow
       variant: primary
-    - text: NPM Package (v1.0.3)
+    - text: NPM Package (v1.0.6)
       link: https://www.npmjs.com/package/create-biawak-app
       icon: external
       variant: minimal
@@ -20,7 +20,7 @@ hero:
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
 <div className="quickstart-box">
-  <p style={{ margin: 0, fontWeight: 700, color: '#047857', fontSize: '1.1rem' }}>⚡ Buat Proyek Baru Dalam Hitungan Detik:</p>
+  <p style={{ margin: 0, fontWeight: 700, color: '#047857', fontSize: '1.15rem' }}>⚡ Buat Proyek Baru Dalam Hitungan Detik:</p>
   <code className="quickstart-code">
     bun create biawak-app@latest my-app
   </code>
@@ -29,11 +29,19 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 ## 🌟 Fitur Utama & Keunggulan
 
 <CardGrid stagger>
-	<Card title="⚡ Performa Super Cepat" icon="rocket">
+	<Card title="🤖 Multi-Provider AI Engine" icon="rocket">
+		Mendukung **OpenAI**, **Google Gemini**, **Anthropic**, **DeepSeek**, **Ollama Local AI**, & Custom endpoints. Terkonfigurasi langsung dari `.env` tanpa dependensi luar yang berat.
+	</Card>
+
+	<Card title="📦 Paket NPM SDK Resmi" icon="setting">
+		Siap terintegrasi dengan paket **`ai-biawak-sdk`** untuk pengintegrasian AI universal dan **`biawak-sdk`** untuk koneksi WebSocket client real-time & streaming AI.
+	</Card>
+
+	<Card title="⚡ Performa Super Cepat" icon="bolt">
 		Ditenagai oleh **Bun v1.3+** runtime dan **Hono v4** web framework yang mampu menangani puluhan ribu request per detik dengan latensi minimal.
 	</Card>
 
-	<Card title="🗄️ Zero-Config SQLite → MySQL" icon="setting">
+	<Card title="🗄️ Zero-Config SQLite → MySQL" icon="random">
 		Langsung jalan tanpa install database server menggunakan **SQLite** (`sqlite.db`). Cukup ubah `DB_DRIVER=mysql` di `.env` untuk beralih ke MySQL saat production!
 	</Card>
 
@@ -41,16 +49,8 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 		Mendukung **Better Auth** session cookies serta **JWT Bearer Token** (Access Token 15 mnt + Refresh Token 7 hari auto-rotation) & Google OAuth Sign-In.
 	</Card>
 
-	<Card title="🦎 Biawak Code Scaffolder" icon="pencil">
-		Fitur CLI bawaan `bun run make:route`, `make:middleware`, dan `make:schema` terisolasi di `node_modules` untuk mempercepat development.
-	</Card>
-
-	<Card title="📡 Real-time WebSockets & BullMQ" icon="laptop">
-		Dukungan native WebSockets (`/ws`) serta pemrosesan task antrean background **BullMQ + Redis** dengan aman.
-	</Card>
-
-	<Card title="📄 Interactive Swagger UI & OpenAPI 3.0" icon="open-book">
-		Dokumentasi API interaktif otomatis di `/api/doc` dan skema OpenAPI 3.0 JSON di `/api/openapi`.
+	<Card title="📡 Real-Time WebSockets & BullMQ" icon="laptop">
+		Dukungan native WebSockets (`/ws`) dengan streaming token AI real-time serta pemrosesan task antrean background **BullMQ + Redis**.
 	</Card>
 </CardGrid>
 
@@ -58,9 +58,9 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 
 ## 🔑 Akun Bawaan Seeding Data
 
-Saat proyek baru dibuat, sistem secara otomatis menginisialisasi database dan akun default:
+Saat proyek baru dibuat (`npx create-biawak-app`), sistem secara otomatis menginisialisasi database dan akun default yang langsung siap digunakan:
 
-| Peran | Email | Password | Hak Akses |
+| Peran | Email | Password | Hak Akses & Fitur |
 |---|---|---|---|
-| 👑 **Admin** | `admin@gmail.com` | `Password123` | Full Admin Privileges |
-| 👤 **User** | `user@gmail.com` | `Password123` | Standard User |
+| 👑 **Admin** | `admin@gmail.com` | `Password123` | Full Admin Privileges + GitHub, LinkedIn, Instagram |
+| 👤 **User** | `user@gmail.com` | `Password123` | Standard User + Instagram, TikTok |
