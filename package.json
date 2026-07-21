@@ -1,6 +1,6 @@
 {
   "name": "create-biawak-app",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "type": "module",
   "description": "High-Performance RESTful API & Real-Time Boilerplate powered by Hono, Bun, SQLite & MySQL",
   "author": "robyajo",
@@ -14,7 +14,7 @@
     "type": "git",
     "url": "git+https://github.com/robyajo/biawak.git"
   },
-  "homepage": "https://github.com/robyajo/biawak#readme",
+  "homepage": "https://biawak-doc.vercel.app",
   "keywords": [
     "biawak",
     "create-biawak-app",
