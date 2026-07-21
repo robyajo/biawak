@@ -1,11 +1,13 @@
 {
   "name": "create-biawak-app",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "High-Performance RESTful API & Real-Time Boilerplate powered by Hono, Bun, SQLite & MySQL",
   "author": "robyajo",
   "license": "MIT",
   "main": "src/index.ts",
-  "bin": "./bin/create-biawak-app.mjs",
+  "bin": {
+    "create-biawak-app": "bin/create-biawak-app.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/robyajo/biawak.git"
