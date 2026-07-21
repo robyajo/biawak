@@ -1,0 +1,25 @@
+{
+  "name": "ai-biawak-sdk",
+  "version": "1.0.0",
+  "description": "Multi-provider AI Integration SDK powered by Biawak Framework",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "bun build ./src/index.ts --outdir ./dist --target node"
+  },
+  "keywords": [
+    "biawak",
+    "ai",
+    "openai",
+    "gemini",
+    "anthropic",
+    "deepseek",
+    "ollama",
+    "llm",
+    "sdk"
+  ],
+  "author": "robyajo",
+  "license": "MIT"
+}

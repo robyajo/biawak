@@ -1,5 +1,15 @@
 {
-  "extends": "astro/tsconfigs/strict",
+  "extends": "./node_modules/astro/tsconfigs/strict.json",
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "astro/*": ["./node_modules/astro/*"],
+      "astro/config": ["./node_modules/astro/dist/config/index.d.ts"]
+    }
+  },
   "include": [".astro/types.d.ts", "**/*"],
   "exclude": ["dist"]
 }

@@ -31,6 +31,17 @@ const envSchema = z.object({
   // Optional WebSocket Configuration (Hono + Bun WS)
   WS_ENABLED: z.coerce.boolean().default(false),
   WS_PATH: z.string().default("/ws"),
+  // AI Configuration (Multi-provider AI Engine)
+  AI_ENABLED: z.coerce.boolean().default(true),
+  AI_PROVIDER: z.enum(["openai", "gemini", "anthropic", "deepseek", "ollama", "custom"]).default("openai"),
+  AI_API_KEY: z.string().optional(),
+  AI_MODEL: z.string().optional(),
+  AI_BASE_URL: z.string().optional(),
+  OPENAI_API_KEY: z.string().optional(),
+  GEMINI_API_KEY: z.string().optional(),
+  ANTHROPIC_API_KEY: z.string().optional(),
+  DEEPSEEK_API_KEY: z.string().optional(),
+  OLLAMA_BASE_URL: z.string().default("http://localhost:11434"),
 });
 
 const parsed = envSchema.safeParse(process.env);

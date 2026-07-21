@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import authRoute from "./auth.js";
+import aiRoute from "./ai.js";
 import { sessionMiddleware } from "../middleware/auth.js";
 import { ensureAdmin } from "../middleware/ensureAdmin.js";
 import type { AuthVariables } from "../middleware/auth.js";
@@ -18,6 +19,8 @@ const api = new Hono<{
 // SUB-ROUTER MOUNTS — Setiap fitur di-mount ke prefix masing-masing
 // ═══════════════════════════════════════════════════════════════════════════════
 api.route("/auth", authRoute); // Auth (register, login, Better Auth)
+api.route("/ai", aiRoute); // Multi-provider AI endpoints (/api/ai)
+
 
 // ─── [GET] /openapi & /doc ── Development Only Documentation ──────────────────
 if (isDev) {

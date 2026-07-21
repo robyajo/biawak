@@ -40,6 +40,19 @@ export default defineConfig({
 					],
 				},
 				{
+					label: '🤖 AI Integration',
+					items: [
+						{ label: 'Integrasi AI Framework', slug: 'ai/framework-ai' },
+						{ label: 'Paket NPM ai-biawak-sdk', slug: 'ai/ai-biawak-sdk' },
+					],
+				},
+				{
+					label: '📦 Client & Realtime SDKs',
+					items: [
+						{ label: 'Paket NPM biawak-sdk (WebSocket)', slug: 'sdk/biawak-sdk' },
+					],
+				},
+				{
 					label: '📢 Release Notes & Blog',
 					items: [
 						{ autogenerate: { directory: 'blog' } },

@@ -1,0 +1,23 @@
+{
+  "name": "biawak-sdk",
+  "version": "1.0.0",
+  "description": "High-performance WebSocket & Client SDK for Biawak Framework applications",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "bun build ./src/index.ts --outdir ./dist --target browser"
+  },
+  "keywords": [
+    "biawak",
+    "websocket",
+    "realtime",
+    "ai-streaming",
+    "pubsub",
+    "sdk",
+    "client"
+  ],
+  "author": "robyajo",
+  "license": "MIT"
+}
