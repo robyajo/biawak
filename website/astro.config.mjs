@@ -4,7 +4,7 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://biawak.web.id',
+	site: 'https://biawak-doc.vercel.app',
 	integrations: [
 		starlight({
 			title: 'Biawak Framework 🦎',
