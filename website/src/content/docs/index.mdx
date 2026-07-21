@@ -34,9 +34,14 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
       <span className="terminal-prompt">$ </span>
       <span className="terminal-cmd">bun create biawak-app@latest my-biawak-app</span>
     </div>
-    <div className="terminal-line terminal-output">
-      <span className="terminal-accent">🦎 B I A W A K  -  A P P</span> — High-Performance Hono + Bun RESTful API
-    </div>
+    <pre className="terminal-line terminal-accent" style={{ lineHeight: '1.2', fontSize: '0.8rem', color: '#10b981', background: 'transparent', padding: '0.5rem 0', margin: '0.5rem 0', border: 'none' }}>
+{`          __/\_
+        /   o o\\     B I A W A K  -  A P P
+        \\   \\_//     High-Performance Hono + Bun RESTful API
+      /\\_/     \\     "Kadal Kampung, Performa Metropolitan!"
+     /          \\__
+     \\_/\\_/\\_/____/`}
+    </pre>
     <div className="terminal-line terminal-output">
       <span className="terminal-success">[ 🦎 ✅ DONE ]</span> Crawling & copying project template files...
     </div>

@@ -1,6 +1,6 @@
 {
   "name": "create-biawak-app",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "type": "module",
   "description": "High-Performance RESTful API & Real-Time Boilerplate powered by Hono, Bun, SQLite & MySQL",
   "author": "robyajo",
@@ -36,6 +36,7 @@
     "db:seed": "bun run src/db/seed.ts",
     "db:reset": "bun run src/db/reset.ts",
     "test": "bun test",
+    "make": "node bin/biawak-make.js",
     "make:route": "node bin/biawak-make.js route",
     "make:middleware": "node bin/biawak-make.js middleware",
     "make:schema": "node bin/biawak-make.js schema",

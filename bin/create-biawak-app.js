@@ -24,11 +24,12 @@ const colors = {
 
 const BIAWAK_ASCII = `
 ${colors.cyan}${colors.bold}
-   🦎                     /\\___/\\ 
-     __  _ _       _     (  o o  )  ${colors.green}B I A W A K  -  A P P${colors.cyan}
-    / / (_) |_____| |_    (  =^= )  ${colors.yellow}High-Performance Hono + Bun RESTful API${colors.cyan}
-   / _ \\| | / _ \\ \`  \\    (------)  ${colors.dim}"Kadal Kampung, Performa Metropolitan!"${colors.cyan}
-  /_.__/|_|_\\___/_|_|_|  (___)___)
+          __/\\_
+        /   o o\\     ${colors.green}B I A W A K  -  A P P${colors.cyan}
+        \\   \\_//     ${colors.yellow}High-Performance Hono + Bun RESTful API${colors.cyan}
+      /\\_/     \\     ${colors.dim}"Kadal Kampung, Performa Metropolitan!"${colors.cyan}
+     /          \\__
+     \\_/\\_/\\_/____/
 ${colors.reset}
 `;
 
@@ -39,12 +40,9 @@ function sleep(ms) {
 // Lizard Crawling Animation Step Helper
 async function runWithLizardAnimation(title, fn) {
   const lizardFrames = [
-    "🦎 . . . . .",
-    " . 🦎 . . . .",
-    " . . 🦎 . . .",
-    " . . . 🦎 . .",
-    " . . . . 🦎 .",
-    " . . . . . 🦎",
+    "🦎  \\_/\\_/",
+    "🦎  _/\\_/\\",
+    "🦎  /\\_/\\_",
   ];
 
   let frameIdx = 0;

@@ -22,14 +22,14 @@ if (!type || !name) {
 ${colors.cyan}${colors.bold}🦎 Biawak Code Generator CLI${colors.reset}
 
 ${colors.bold}Usage:${colors.reset}
-  bun run make:route <name>       ${colors.yellow}Create a new Hono API route${colors.reset}
-  bun run make:middleware <name>  ${colors.yellow}Create a new custom middleware${colors.reset}
-  bun run make:schema <name>      ${colors.yellow}Create a new DB schema for SQLite & MySQL${colors.reset}
+  bun run make route <name>       ${colors.yellow}Create a new Hono API route (Alternative: bun run make:route <name>)${colors.reset}
+  bun run make middleware <name>  ${colors.yellow}Create a new custom middleware (Alternative: bun run make:middleware <name>)${colors.reset}
+  bun run make schema <name>      ${colors.yellow}Create a new DB schema for SQLite & MySQL (Alternative: bun run make:schema <name>)${colors.reset}
 
 ${colors.bold}Examples:${colors.reset}
-  bun run make:route product
-  bun run make:middleware rateLimit
-  bun run make:schema product
+  bun run make route product
+  bun run make middleware rateLimit
+  bun run make schema product
 `);
   process.exit(1);
 }
