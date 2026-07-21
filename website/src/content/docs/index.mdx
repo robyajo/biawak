@@ -19,11 +19,44 @@ hero:
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-<div className="quickstart-box">
-  <p style={{ margin: 0, fontWeight: 700, color: '#047857', fontSize: '1.15rem' }}>⚡ Buat Proyek Baru Dalam Hitungan Detik:</p>
-  <code className="quickstart-code">
-    bun create biawak-app@latest my-app
-  </code>
+<div className="terminal-mockup">
+  <div className="terminal-header">
+    <div className="terminal-dots">
+      <span className="dot dot-red"></span>
+      <span className="dot dot-yellow"></span>
+      <span className="dot dot-green"></span>
+    </div>
+    <span className="terminal-title">bash — biawak-app (~/dev)</span>
+    <span></span>
+  </div>
+  <div className="terminal-body">
+    <div className="terminal-line">
+      <span className="terminal-prompt">$ </span>
+      <span className="terminal-cmd">bun create biawak-app@latest my-biawak-app</span>
+    </div>
+    <div className="terminal-line terminal-output">
+      <span className="terminal-accent">🦎 B I A W A K  -  A P P</span> — High-Performance Hono + Bun RESTful API
+    </div>
+    <div className="terminal-line terminal-output">
+      <span className="terminal-success">[ 🦎 ✅ DONE ]</span> Crawling & copying project template files...
+    </div>
+    <div className="terminal-line terminal-output">
+      <span className="terminal-success">[ 🦎 ✅ DONE ]</span> Scaling dependencies with bun install...
+    </div>
+    <div className="terminal-line terminal-output">
+      <span className="terminal-success">[ 🦎 ✅ DONE ]</span> Laying database eggs (Initial SQLite db:push & seeding)...
+    </div>
+    <div className="terminal-line" style={{ marginTop: '0.75rem' }}>
+      <span className="terminal-success">✨ 🦎 Biawak project created successfully! 🦎 ✨</span>
+    </div>
+    <div className="terminal-line">
+      <span className="terminal-prompt">$ </span>
+      <span className="terminal-cmd">cd my-biawak-app && bun dev</span>
+    </div>
+    <div className="terminal-line terminal-yellow">
+      🚀 Server is running on http://localhost:8000
+    </div>
+  </div>
 </div>
 
 ## 🌟 Fitur Utama & Keunggulan
