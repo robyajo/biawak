@@ -7,7 +7,12 @@ export default defineConfig({
 	site: 'https://biawak-doc.vercel.app',
 	integrations: [
 		starlight({
-			title: 'Biawak Framework 🦎',
+			title: 'Biawak Framework',
+			favicon: '/favico.svg',
+			logo: {
+				src: './src/assets/logo-biawak.png',
+				alt: 'Biawak Framework Logo',
+			},
 			customCss: ['./src/styles/custom.css'],
 			social: [
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/robyajo/biawak' },
