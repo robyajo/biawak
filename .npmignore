@@ -16,3 +16,8 @@ test-*
 dist
 node_modules
 website
+.agents
+packages
+AGENTS.md
+bun.lock
+package-lock.json

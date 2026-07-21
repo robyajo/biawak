@@ -77,11 +77,73 @@ async function promptInput(question, defaultValue) {
   });
 }
 
+async function runUpgrade() {
+  const cwd = process.cwd();
+  const pkgPath = path.join(cwd, "package.json");
+
+  if (!fs.existsSync(pkgPath)) {
+    console.error(`${colors.red}❌ Error: package.json not found in current directory! Make sure you are in a Biawak project root.${colors.reset}`);
+    process.exit(1);
+  }
+
+  console.log(`\n${colors.cyan}${colors.bold}🦎 Biawak Framework - Upgrade Assistant${colors.reset}`);
+  
+  // Read template package.json from framework distribution
+  const templatePkgPath = path.resolve(__dirname, "../package.json");
+  if (!fs.existsSync(templatePkgPath)) {
+    console.error(`${colors.red}❌ Error: Framework template package.json not found!${colors.reset}`);
+    process.exit(1);
+  }
+
+  const userPkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
+  const templatePkg = JSON.parse(fs.readFileSync(templatePkgPath, "utf-8"));
+
+  console.log(`\n🔄 Comparing dependencies...`);
+
+  let updated = false;
+
+  const syncDeps = (type) => {
+    if (!templatePkg[type]) return;
+    if (!userPkg[type]) userPkg[type] = {};
+
+    for (const [dep, version] of Object.entries(templatePkg[type])) {
+      if (userPkg[type][dep] !== version) {
+        console.log(`  ➕ ${type === "dependencies" ? "Dep" : "DevDep"}: ${colors.yellow}${dep}${colors.reset} -> ${colors.green}${version}${colors.reset}`);
+        userPkg[type][dep] = version;
+        updated = true;
+      }
+    }
+  };
+
+  syncDeps("dependencies");
+  syncDeps("devDependencies");
+
+  if (updated) {
+    fs.writeFileSync(pkgPath, JSON.stringify(userPkg, null, 2), "utf-8");
+    console.log(`\n${colors.green}✔ Updated package.json successfully!${colors.reset}`);
+
+    const packageManager = fs.existsSync(path.join(cwd, "bun.lockb")) || fs.existsSync(path.join(cwd, "bun.lock")) ? "bun" : "npm";
+    
+    await runWithLizardAnimation(`Re-installing packages with ${packageManager} install...`, async () => {
+      const installCmd = packageManager === "bun" ? "bun install" : "npm install";
+      execSync(installCmd, { cwd, stdio: "ignore" });
+    });
+
+    console.log(`\n${colors.green}${colors.bold}✨ Upgrade completed successfully! All dependencies are up-to-date. 🦎${colors.reset}\n`);
+  } else {
+    console.log(`\n${colors.green}✔ Your dependencies are already up-to-date with the latest framework version!${colors.reset}\n`);
+  }
+}
+
 async function main() {
   console.clear();
   console.log(BIAWAK_ASCII);
 
   let targetDirArg = process.argv[2];
+  if (targetDirArg === "upgrade") {
+    await runUpgrade();
+    return;
+  }
   if (!targetDirArg) {
     targetDirArg = await promptInput("Target project directory name?", "my-biawak-app");
   }
@@ -110,6 +172,12 @@ async function main() {
       "bin",
       "website",
       ".DS_Store",
+      ".agents",
+      "packages",
+      "AGENTS.md",
+      "bun.lock",
+      "package-lock.json",
+      "README.md",
     ];
 
     function copyDirRecursive(src, dest) {
@@ -151,8 +219,14 @@ async function main() {
       pkgData.name = projectName;
       pkgData.version = "0.1.0";
       delete pkgData.bin;
+      if (!pkgData.scripts) pkgData.scripts = {};
+      pkgData.scripts.upgrade = "npx create-biawak-app upgrade";
       fs.writeFileSync(pkgPath, JSON.stringify(pkgData, null, 2), "utf-8");
     }
+
+    // Generate custom starter README.md
+    const readmeContent = `# ${projectName} 🦎\nHigh-Performance RESTful API ditenagai Hono v4 & Bun v1.3.\n\n## 🚀 Mulai Cepat\n\n1. Jalankan development server:\n\`\`\`bash\nbun run dev\n\`\`\`\n\n2. Akses portal developer di browser Anda:\n[http://localhost:8000/](http://localhost:8000/)\n\n## 🛠️ Generator CLI\nBiawak CLI mempermudah pembuatan file route, middleware, dan skema database secara instan:\n- \`bun run make route <name>\`\n- \`bun run make middleware <name>\`\n- \`bun run make schema <name>\`\n\n## 📖 Dokumentasi Lengkap\nKunjungi [Biawak Documentation](https://biawak-doc.vercel.app/) untuk panduan lebih lanjut.\n`;
+    fs.writeFileSync(path.join(targetDir, "README.md"), readmeContent, "utf-8");
 
     await sleep(400);
   });

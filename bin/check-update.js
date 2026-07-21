@@ -1,11 +1,15 @@
-const https = require('https');
-const fs = require('fs');
-const path = require('path');
+import https from 'node:https';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const REPO_VERSION_URL = 'https://registry.npmjs.org/create-biawak-app/latest';
 const TIMEOUT = 2000;
 
-const packageJson = require('../package.json');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const packageJson = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../package.json'), 'utf-8'));
 const currentVersion = packageJson.dependencies?.['create-biawak-app'] || packageJson.version;
 
 function checkForUpdates() {
@@ -73,11 +77,36 @@ function showUpdateMessage(latest, current) {
     console.log(`${fgYellow}│                                                             │${reset}`);
     console.log(`${fgYellow}│   Silakan cek repository untuk melihat perubahan terbaru.   │${reset}`);
     console.log(`${fgYellow}│                                                             │${reset}`);
-    console.log(`${fgYellow}│   Untuk upgrade jalankan:                                   │${reset}`);
-    console.log(`${fgYellow}│   ${fgCyan}npm install create-biawak-app@latest${reset}${fgYellow}                         │${reset}`);
+    console.log(`${fgYellow}│   Langkah Upgrade:                                          │${reset}`);
+    console.log(`${fgYellow}│   1. ${fgCyan}npm install -g create-biawak-app@latest${reset}${fgYellow}                 │${reset}`);
+    console.log(`${fgYellow}│   2. ${fgCyan}bun run upgrade${reset}${fgYellow} (di folder proyek Anda)                 │${reset}`);
     console.log(`${fgYellow}│                                                             │${reset}`);
     console.log(`${fgYellow}└─────────────────────────────────────────────────────────────┘${reset}`);
     console.log('\n');
 }
 
+function cleanUserWorkspace() {
+    const cwd = process.cwd();
+    
+    // Safety check: Do NOT run cleanup if in the framework development workspace
+    if (fs.existsSync(path.join(cwd, 'bin', 'release.js')) || fs.existsSync(path.join(cwd, 'website', 'astro.config.mjs'))) {
+        return;
+    }
+
+    const filesToDelete = ['.agents', 'packages', 'AGENTS.md'];
+    
+    filesToDelete.forEach(file => {
+        const filePath = path.join(cwd, file);
+        if (fs.existsSync(filePath)) {
+            try {
+                fs.rmSync(filePath, { recursive: true, force: true });
+                console.log(`\x1b[32m[Biawak Upgrade] Bersihkan berkas developer: ${file}\x1b[0m`);
+            } catch (err) {
+                // Ignore cleanup errors
+            }
+        }
+    });
+}
+
+cleanUserWorkspace();
 checkForUpdates();
