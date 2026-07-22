@@ -2,10 +2,15 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import dotenv from "dotenv";
 
 const type = process.argv[2];
 const name = process.argv[3];
 const cwd = process.cwd();
+
+// Load .env from current working directory
+dotenv.config({ path: path.join(cwd, ".env") });
+const dbDriver = process.env.DB_DRIVER || "sqlite";
 
 const colors = {
   reset: "\x1b[0m",
@@ -117,16 +122,25 @@ export async function ${camelCaseName}Middleware(c: Context, next: Next) {
   fs.writeFileSync(filePath, middlewareContent, "utf-8");
   console.log(`\n${colors.green}✨ Created Middleware:${colors.reset} ${colors.cyan}src/middleware/${formattedName}.ts${colors.reset}\n`);
 } else if (type === "schema") {
+  console.log(`\n${colors.dim}🦎 Active DB Driver from .env: ${colors.bold}${dbDriver.toUpperCase()}${colors.reset}`);
+
   const sqliteDir = path.join(cwd, "src", "db", "schema", "sqlite");
   const mysqlDir = path.join(cwd, "src", "db", "schema", "mysql");
 
-  if (!fs.existsSync(sqliteDir)) fs.mkdirSync(sqliteDir, { recursive: true });
-  if (!fs.existsSync(mysqlDir)) fs.mkdirSync(mysqlDir, { recursive: true });
+  const hasSqliteFolder = fs.existsSync(sqliteDir);
+  const hasMysqlFolder = fs.existsSync(mysqlDir);
 
-  const sqlitePath = path.join(sqliteDir, `${formattedName}.ts`);
-  const mysqlPath = path.join(mysqlDir, `${formattedName}.ts`);
+  const shouldGenerateSqlite = hasSqliteFolder && dbDriver === "sqlite";
+  const shouldGenerateMysql = hasMysqlFolder && dbDriver === "mysql";
 
-  const sqliteContent = `import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+  let createdSqlite = false;
+  let createdMysql = false;
+
+  console.log(`\n${colors.green}✨ Created Schemas:${colors.reset}`);
+
+  if (shouldGenerateSqlite) {
+    const sqlitePath = path.join(sqliteDir, `${formattedName}.ts`);
+    const sqliteContent = `import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 
 export const ${camelCaseName} = sqliteTable("${formattedName}", {
   id: text("id").primaryKey(),
@@ -135,8 +149,14 @@ export const ${camelCaseName} = sqliteTable("${formattedName}", {
   updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
 });
 `;
+    fs.writeFileSync(sqlitePath, sqliteContent, "utf-8");
+    console.log(`  📄 SQLite: ${colors.cyan}src/db/schema/sqlite/${formattedName}.ts${colors.reset}`);
+    createdSqlite = true;
+  }
 
-  const mysqlContent = `import { mysqlTable, varchar, timestamp } from "drizzle-orm/mysql-core";
+  if (shouldGenerateMysql) {
+    const mysqlPath = path.join(mysqlDir, `${formattedName}.ts`);
+    const mysqlContent = `import { mysqlTable, varchar, timestamp } from "drizzle-orm/mysql-core";
 
 export const ${camelCaseName} = mysqlTable("${formattedName}", {
   id: varchar("id", { length: 255 }).primaryKey(),
@@ -145,35 +165,34 @@ export const ${camelCaseName} = mysqlTable("${formattedName}", {
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
 });
 `;
-
-  fs.writeFileSync(sqlitePath, sqliteContent, "utf-8");
-  fs.writeFileSync(mysqlPath, mysqlContent, "utf-8");
-
-  console.log(`\n${colors.green}✨ Created Dual Schemas:${colors.reset}`);
-  console.log(`  📄 ${colors.cyan}src/db/schema/sqlite/${formattedName}.ts${colors.reset}`);
-  console.log(`  📄 ${colors.cyan}src/db/schema/mysql/${formattedName}.ts${colors.reset}`);
+    fs.writeFileSync(mysqlPath, mysqlContent, "utf-8");
+    console.log(`  📄 MySQL:  ${colors.cyan}src/db/schema/mysql/${formattedName}.ts${colors.reset}`);
+    createdMysql = true;
+  }
 
   // Auto-append exports to index files
-  const sqliteIndexPath = path.join(sqliteDir, "index.ts");
-  const mysqlIndexPath = path.join(mysqlDir, "index.ts");
-  const exportLine = `export * from "./${formattedName}.js";\n`;
-
   let appendedSqlite = false;
   let appendedMysql = false;
 
-  if (fs.existsSync(sqliteIndexPath)) {
-    const content = fs.readFileSync(sqliteIndexPath, "utf-8");
-    if (!content.includes(`./${formattedName}.js`)) {
-      fs.appendFileSync(sqliteIndexPath, exportLine, "utf-8");
-      appendedSqlite = true;
+  if (createdSqlite) {
+    const sqliteIndexPath = path.join(sqliteDir, "index.ts");
+    if (fs.existsSync(sqliteIndexPath)) {
+      const content = fs.readFileSync(sqliteIndexPath, "utf-8");
+      if (!content.includes(`./${formattedName}.js`)) {
+        fs.appendFileSync(sqliteIndexPath, `export * from "./${formattedName}.js";\n`, "utf-8");
+        appendedSqlite = true;
+      }
     }
   }
 
-  if (fs.existsSync(mysqlIndexPath)) {
-    const content = fs.readFileSync(mysqlIndexPath, "utf-8");
-    if (!content.includes(`./${formattedName}.js`)) {
-      fs.appendFileSync(mysqlIndexPath, exportLine, "utf-8");
-      appendedMysql = true;
+  if (createdMysql) {
+    const mysqlIndexPath = path.join(mysqlDir, "index.ts");
+    if (fs.existsSync(mysqlIndexPath)) {
+      const content = fs.readFileSync(mysqlIndexPath, "utf-8");
+      if (!content.includes(`./${formattedName}.js`)) {
+        fs.appendFileSync(mysqlIndexPath, `export * from "./${formattedName}.js";\n`, "utf-8");
+        appendedMysql = true;
+      }
     }
   }
 
@@ -183,12 +202,13 @@ export const ${camelCaseName} = mysqlTable("${formattedName}", {
 
   if (fs.existsSync(mainIndexPath)) {
     const content = fs.readFileSync(mainIndexPath, "utf-8");
-    const targetString = `activeSchema.${camelCaseName}`;
-    if (!content.includes(targetString)) {
-      // Find where to append, or simply append at the end
-      const line = `export const ${camelCaseName} = activeSchema.${camelCaseName};\n`;
-      fs.appendFileSync(mainIndexPath, line, "utf-8");
-      appendedMain = true;
+    if (content.includes("activeSchema")) {
+      const targetString = `activeSchema.${camelCaseName}`;
+      if (!content.includes(targetString)) {
+        const line = `export const ${camelCaseName} = activeSchema.${camelCaseName};\n`;
+        fs.appendFileSync(mainIndexPath, line, "utf-8");
+        appendedMain = true;
+      }
     }
   }
 
@@ -199,9 +219,17 @@ export const ${camelCaseName} = mysqlTable("${formattedName}", {
     if (appendedMain) console.log(`  🔗 ${colors.dim}Appended export to dynamic schema wrapper (src/db/schema/index.ts)${colors.reset}`);
   }
 
-  console.log(`\n${colors.bold}Next Steps:${colors.reset}`);
-  console.log(`  1. Run ${colors.yellow}bun run db:generate${colors.reset} to create migrations.`);
-  console.log(`  2. Import the new schemas from ${colors.cyan}src/db/schema/index.js${colors.reset} in your route files.\n`);
+  if (dbDriver === "mysql" && hasSqliteFolder) {
+    console.log(`\n${colors.yellow}⚠️  Note: SQLite schema was not generated because DB_DRIVER is set to "mysql".${colors.reset}`);
+    console.log(`  To avoid TypeScript compilation errors in ${colors.cyan}src/db/schema/index.ts${colors.reset}, you can:`);
+    console.log(`  1. Delete the SQLite schema folder completely if you are migrating fully to MySQL.`);
+    console.log(`  2. Or, change ${colors.cyan}src/db/schema/index.ts${colors.reset} to export directly:`);
+    console.log(`     ${colors.bold}export * from "./mysql/index.js";${colors.reset}\n`);
+  } else {
+    console.log(`\n${colors.bold}Next Steps:${colors.reset}`);
+    console.log(`  1. Run ${colors.yellow}bun run db:generate${colors.reset} to create migrations.`);
+    console.log(`  2. Import the new schemas from ${colors.cyan}src/db/schema/index.js${colors.reset} in your route files.\n`);
+  }
 } else {
   console.error(`${colors.red}❌ Error: Unknown generator type '${type}'. Use 'route', 'middleware', or 'schema'.${colors.reset}`);
   process.exit(1);
