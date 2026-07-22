@@ -151,7 +151,57 @@ export const ${camelCaseName} = mysqlTable("${formattedName}", {
 
   console.log(`\n${colors.green}✨ Created Dual Schemas:${colors.reset}`);
   console.log(`  📄 ${colors.cyan}src/db/schema/sqlite/${formattedName}.ts${colors.reset}`);
-  console.log(`  📄 ${colors.cyan}src/db/schema/mysql/${formattedName}.ts${colors.reset}\n`);
+  console.log(`  📄 ${colors.cyan}src/db/schema/mysql/${formattedName}.ts${colors.reset}`);
+
+  // Auto-append exports to index files
+  const sqliteIndexPath = path.join(sqliteDir, "index.ts");
+  const mysqlIndexPath = path.join(mysqlDir, "index.ts");
+  const exportLine = `export * from "./${formattedName}.js";\n`;
+
+  let appendedSqlite = false;
+  let appendedMysql = false;
+
+  if (fs.existsSync(sqliteIndexPath)) {
+    const content = fs.readFileSync(sqliteIndexPath, "utf-8");
+    if (!content.includes(`./${formattedName}.js`)) {
+      fs.appendFileSync(sqliteIndexPath, exportLine, "utf-8");
+      appendedSqlite = true;
+    }
+  }
+
+  if (fs.existsSync(mysqlIndexPath)) {
+    const content = fs.readFileSync(mysqlIndexPath, "utf-8");
+    if (!content.includes(`./${formattedName}.js`)) {
+      fs.appendFileSync(mysqlIndexPath, exportLine, "utf-8");
+      appendedMysql = true;
+    }
+  }
+
+  // Auto-append export to main index/wrapper
+  const mainIndexPath = path.join(cwd, "src", "db", "schema", "index.ts");
+  let appendedMain = false;
+
+  if (fs.existsSync(mainIndexPath)) {
+    const content = fs.readFileSync(mainIndexPath, "utf-8");
+    const targetString = `activeSchema.${camelCaseName}`;
+    if (!content.includes(targetString)) {
+      // Find where to append, or simply append at the end
+      const line = `export const ${camelCaseName} = activeSchema.${camelCaseName};\n`;
+      fs.appendFileSync(mainIndexPath, line, "utf-8");
+      appendedMain = true;
+    }
+  }
+
+  if (appendedSqlite || appendedMysql || appendedMain) {
+    console.log(`\n${colors.green}🔗 Auto-linked Schemas to Indexes:${colors.reset}`);
+    if (appendedSqlite) console.log(`  🔗 ${colors.dim}Appended export to sqlite index (src/db/schema/sqlite/index.ts)${colors.reset}`);
+    if (appendedMysql) console.log(`  🔗 ${colors.dim}Appended export to mysql index (src/db/schema/mysql/index.ts)${colors.reset}`);
+    if (appendedMain) console.log(`  🔗 ${colors.dim}Appended export to dynamic schema wrapper (src/db/schema/index.ts)${colors.reset}`);
+  }
+
+  console.log(`\n${colors.bold}Next Steps:${colors.reset}`);
+  console.log(`  1. Run ${colors.yellow}bun run db:generate${colors.reset} to create migrations.`);
+  console.log(`  2. Import the new schemas from ${colors.cyan}src/db/schema/index.js${colors.reset} in your route files.\n`);
 } else {
   console.error(`${colors.red}❌ Error: Unknown generator type '${type}'. Use 'route', 'middleware', or 'schema'.${colors.reset}`);
   process.exit(1);
